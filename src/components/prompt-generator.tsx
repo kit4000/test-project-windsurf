@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { HearingForm } from "./hearing-form";
 
 type PromptGeneratorProps = {
   sessionId: string;
@@ -39,6 +38,51 @@ const MOCK_RESPONSES: Record<string, Record<string, Record<string, string>>> = {
       "work-style": "週3-4日程度の外回り営業あり。直行直帰可。社用車またはカーシェアサービスの利用可能。",
       "career-path": "営業 → チームリーダー → マネージャー → 営業部長というキャリアパスあり。実績に応じたスピード昇進も可能。",
       "selection-process": "1. 書類選考\n2. 一次面接（営業マネージャー）\n3. 二次面接（営業ロールプレイング含む）\n4. 最終面接（役員）\n内定",
+    },
+  },
+  "manufacturing": {
+    "mock-session-id": {
+      "job-title": "品質管理エンジニア",
+      "job-description": "自動車部品の品質管理業務を担当していただきます。製品の検査、品質データの分析、不良品の原因究明と改善策の提案などを行います。製造ラインと連携し、品質向上のための取り組みを推進していただきます。",
+      "products": "自動車のブレーキシステム、サスペンション部品など",
+      "required-skills": "- 品質管理の実務経験3年以上\n- 品質管理手法（QC7つ道具など）の知識と実践経験\n- データ分析能力\n- コミュニケーション能力",
+      "preferred-skills": "- 品質管理関連の資格（QC検定2級以上など）\n- 製造業での勤務経験\n- 改善活動の推進経験",
+      "work-environment": "空調完備の工場内検査室での勤務が中心です。一部、製造ラインでの立ち会い検査も行います。",
+      "employment-type": "正社員",
+      "work-hours": "8:30〜17:30（実働8時間）、残業月平均20時間程度、交代制勤務なし",
+      "salary-range": "月給25万円〜35万円（経験・能力による）、賞与年2回",
+      "work-location": "愛知県豊田市（本社工場）",
+      "selection-process": "1. 書類選考\n2. 適性検査\n3. 一次面接（部門担当者）\n4. 二次面接（役員）\n内定",
+    },
+  },
+  "medical": {
+    "mock-session-id": {
+      "job-title": "看護師",
+      "job-description": "急性期病棟での看護業務全般を担当していただきます。患者さんの観察、医療処置、服薬管理、看護記録の作成などを行います。医師や他の医療スタッフと連携して、質の高い医療サービスの提供を目指します。",
+      "facility-type": "総合病院（350床、急性期病棟、救急指定）",
+      "required-qualifications": "看護師免許",
+      "required-experience": "実務経験2年以上（新卒の方は応相談）",
+      "work-hours": "日勤：8:30〜17:00、夜勤：16:30〜9:00（二交代制）、月平均夜勤回数：4〜5回",
+      "employment-type": "正社員",
+      "salary-range": "月給28万円〜35万円（経験による）、夜勤手当、資格手当別途支給",
+      "work-location": "東京都新宿区（最寄駅から徒歩5分）",
+      "benefits": "- 社会保険完備\n- 退職金制度\n- 住宅手当（条件あり）\n- 資格取得支援制度\n- 院内保育所あり\n- 職員食堂（食事補助あり）",
+      "selection-process": "1. 書類選考\n2. 面接（看護部長）\n3. 最終面接（病院長）\n内定",
+    },
+  },
+  "service": {
+    "mock-session-id": {
+      "job-title": "ホテルフロントスタッフ",
+      "job-description": "都内高級ホテルのフロントデスクでの接客業務全般を担当していただきます。チェックイン・チェックアウト対応、予約管理、館内案内、電話対応など、ホテルの顔としてお客様をおもてなしします。",
+      "service-type": "高級シティホテル（客室数180室、レストラン3店舗併設）",
+      "required-skills": "- 接客業務経験1年以上\n- ビジネスレベルの英語力（日常会話レベル以上）\n- PCスキル（Word、Excel、予約システムなど）\n- コミュニケーション能力",
+      "preferred-skills": "- ホテル業界での勤務経験\n- 第二外国語（中国語、韓国語など）\n- ホスピタリティ関連の資格",
+      "work-hours": "シフト制（早番：6:00〜15:00、中番：13:00〜22:00、遅番：15:00〜24:00）、週5日勤務、シフトは月単位で調整",
+      "employment-type": "正社員",
+      "salary-range": "月給23万円〜28万円（経験・能力による）、賞与年2回、深夜手当別途支給",
+      "work-location": "東京都中央区（最寄駅から徒歩3分）",
+      "benefits": "- 社会保険完備\n- 交通費全額支給\n- 社員割引（系列ホテル・レストラン）\n- 制服貸与\n- 食事補助\n- 資格取得支援制度",
+      "selection-process": "1. 書類選考\n2. 一次面接・適性検査\n3. 英語力テスト\n4. 最終面接\n内定",
     },
   },
 };
@@ -165,15 +209,155 @@ ${responses["selection-process"]}
 5. 応募方法と選考フロー
 
 フォーマットは見やすく、読みやすい構成にしてください。また、やる気のある営業人材が「この会社で働きたい」と思えるような熱意のある文章を心がけてください。`;
+    } else if (industry === "manufacturing") {
+      generatedPrompt = `以下の情報を基に、製造業の魅力的な採用要項を作成してください。製造業に興味のある人材を惹きつける内容を心がけてください。
+
+【募集職種】
+${responses["job-title"]}
+
+【職務内容】
+${responses["job-description"]}
+
+【取り扱う製品・部品】
+${responses["products"]}
+
+【必須スキル・経験】
+${responses["required-skills"]}
+
+【歓迎スキル・経験】
+${responses["preferred-skills"] || "特になし"}
+
+【作業環境】
+${responses["work-environment"]}
+
+【雇用形態】
+${responses["employment-type"]}
+
+【勤務時間・シフト】
+${responses["work-hours"]}
+
+【給与】
+${responses["salary-range"]}
+
+【勤務地】
+${responses["work-location"]}
+
+【選考プロセス】
+${responses["selection-process"]}
+
+以上の情報を整理し、以下の要素を含む採用要項を作成してください：
+1. 製造業の魅力やものづくりの醍醐味を強調した導入文
+2. 具体的な業務内容と製品の特徴
+3. 安全で働きやすい職場環境の説明
+4. キャリアパスと技術向上の機会
+5. 応募方法と選考フロー
+
+フォーマットは見やすく、読みやすい構成にしてください。また、製造業未経験者にもわかりやすい説明を心がけてください。`;
+    } else if (industry === "medical") {
+      generatedPrompt = `以下の情報を基に、医療・福祉分野の魅力的な採用要項を作成してください。医療従事者として働きたい人材を惹きつける内容を心がけてください。
+
+【募集職種】
+${responses["job-title"]}
+
+【職務内容】
+${responses["job-description"]}
+
+【施設の種類・規模】
+${responses["facility-type"]}
+
+【必要資格】
+${responses["required-qualifications"]}
+
+【必須経験】
+${responses["required-experience"]}
+
+【勤務時間・シフト】
+${responses["work-hours"]}
+
+【雇用形態】
+${responses["employment-type"]}
+
+【給与】
+${responses["salary-range"]}
+
+【勤務地】
+${responses["work-location"]}
+
+【福利厚生・待遇】
+${responses["benefits"] || "各種社会保険完備"}
+
+【選考プロセス】
+${responses["selection-process"]}
+
+以上の情報を整理し、以下の要素を含む採用要項を作成してください：
+1. 医療・福祉の仕事のやりがいや社会的意義を強調した導入文
+2. 具体的な業務内容と施設の特徴
+3. ワークライフバランスへの配慮
+4. キャリア成長や専門性向上の機会
+5. 応募方法と選考フロー
+
+フォーマットは見やすく、読みやすい構成にしてください。また、医療従事者の心に響く温かみのある文章を心がけてください。`;
+    } else if (industry === "service") {
+      generatedPrompt = `以下の情報を基に、サービス業の魅力的な採用要項を作成してください。おもてなしの心を持った人材を惹きつける内容を心がけてください。
+
+【募集職種】
+${responses["job-title"]}
+
+【職務内容】
+${responses["job-description"]}
+
+【提供するサービス】
+${responses["service-type"]}
+
+【必須スキル・経験】
+${responses["required-skills"]}
+
+【歓迎スキル・経験】
+${responses["preferred-skills"] || "特になし"}
+
+【勤務時間・シフト】
+${responses["work-hours"]}
+
+【雇用形態】
+${responses["employment-type"]}
+
+【給与】
+${responses["salary-range"]}
+
+【勤務地】
+${responses["work-location"]}
+
+【福利厚生・待遇】
+${responses["benefits"] || "各種社会保険完備"}
+
+【選考プロセス】
+${responses["selection-process"]}
+
+以上の情報を整理し、以下の要素を含む採用要項を作成してください：
+1. サービス業の魅力とおもてなしの精神を強調した導入文
+2. 具体的な業務内容とお客様との関わり
+3. 働きやすい環境や研修制度
+4. キャリアパスと成長機会
+5. 応募方法と選考フロー
+
+フォーマットは見やすく、読みやすい構成にしてください。また、サービスマインドを持った人材が「ここで働きたい」と思えるような魅力的な文章を心がけてください。`;
     } else {
-      // 他の業種のテンプレート
+      // 汎用テンプレート
       generatedPrompt = `以下の情報を基に、採用要項を作成してください。
 
 ${Object.entries(responses)
         .map(([key, value]) => `【${key}】\n${value}`)
         .join("\n\n")}
 
-以上の情報を整理し、魅力的な採用要項を作成してください。応募者の目を引く内容を心がけてください。`;
+以上の情報を整理し、魅力的な採用要項を作成してください。応募者の目を引く内容を心がけてください。
+次の要素を含めるようにしてください：
+1. 魅力的な導入文
+2. 具体的な業務内容の説明
+3. 必要なスキルと経験
+4. 勤務条件と福利厚生
+5. 応募方法と選考プロセス
+
+フォーマットは見やすく、読みやすい構成にしてください。`;
     }
 
     setPrompt(generatedPrompt);
