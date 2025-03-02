@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent } from "@/components/ui/card";
 
 type Industry = {
   id: string;
@@ -41,14 +38,14 @@ const MOCK_INDUSTRIES: Industry[] = [
   },
 ];
 
-export function IndustrySelector() {
-  const [selectedIndustry, setSelectedIndustry] = useState<string>("");
-  const router = useRouter();
+type IndustrySelectorProps = {
+  onSelect: (industryId: string) => void;
+  selectedIndustry: string;
+};
 
+export function IndustrySelector({ onSelect, selectedIndustry }: IndustrySelectorProps) {
   const handleIndustryChange = (value: string) => {
-    setSelectedIndustry(value);
-    // あとでボタン押下時に遷移するように変更
-    // router.push(`/hearing/${value}`);
+    onSelect(value);
   };
 
   return (
