@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Industry {
+  id           String         @id @default(uuid())
+  name         String
+  description  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  hearingItems HearingItem[]
+  sessions     HearingSession[]
+
+  @@map("industries")
+}
+
+model HearingItem {
+  id          String        @id @default(uuid())
+  question    String
+  description String?
+  type        String        // text, select, multiselect, checkbox, radio, etc.
+  options     String?       // JSON string for select options if applicable
+  required    Boolean       @default(false)
+  order       Int
+  industryId  String
+  industry    Industry      @relation(fields: [industryId], references: [id], onDelete: Cascade)
+  responses   Response[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("hearing_items")
+}
+
+model HearingSession {
+  id         String     @id @default(uuid())
+  title      String?
+  industryId String
+  industry   Industry   @relation(fields: [industryId], references: [id])
+  responses  Response[]
+  prompt     String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("hearing_sessions")
+}
+
+model Response {
+  id              String         @id @default(uuid())
+  answer          String
+  hearingItemId   String
+  hearingItem     HearingItem    @relation(fields: [hearingItemId], references: [id], onDelete: Cascade)
+  sessionId       String
+  hearingSession  HearingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@map("responses")
+}
