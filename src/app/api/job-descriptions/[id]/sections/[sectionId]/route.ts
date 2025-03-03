@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { JobDescriptionService } from '@/lib/utils/job-description-service';
 import { UpdateJobDescriptionSectionRequest } from '@/types/job-description';
 import { prisma } from '@/lib/prisma/client';
+import { AIServiceFactory } from '@/lib/utils/ai-service';
 
 interface RouteParams {
   params: {
