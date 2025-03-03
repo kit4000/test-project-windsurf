@@ -18,6 +18,7 @@ model Industry {
   updatedAt    DateTime       @updatedAt
   hearingItems HearingItem[]
   sessions     HearingSession[]
+  jobTemplates JobTemplate[]
 
   @@map("industries")
 }
@@ -40,14 +41,15 @@ model HearingItem {
 }
 
 model HearingSession {
-  id         String     @id @default(uuid())
-  title      String?
-  industryId String
-  industry   Industry   @relation(fields: [industryId], references: [id])
-  responses  Response[]
-  prompt     String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id              String           @id @default(uuid())
+  title           String?
+  industryId      String
+  industry        Industry         @relation(fields: [industryId], references: [id])
+  responses       Response[]
+  prompt          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  jobDescriptions JobDescription[]
 
   @@map("hearing_sessions")
 }
@@ -63,4 +65,82 @@ model Response {
   updatedAt       DateTime       @updatedAt
 
   @@map("responses")
+}
+
+// 募集要項生成システム用のモデル
+
+model AIProvider {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  apiKey      String
+  baseUrl     String?
+  provider    String   // "openai", "anthropic", "gemini", etc.
+  modelName   String   // "gpt-4", "claude-3-opus", etc.
+  isDefault   Boolean  @default(false)
+  temperature Float    @default(0.7)
+  maxTokens   Int      @default(4000)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ai_providers")
+}
+
+model JobTemplate {
+  id          String              @id @default(uuid())
+  name        String
+  industryId  String
+  industry    Industry            @relation(fields: [industryId], references: [id])
+  description String?
+  isDefault   Boolean             @default(false)
+  sections    JobTemplateSection[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  jobDescriptions JobDescription[]
+
+  @@map("job_templates")
+}
+
+model JobTemplateSection {
+  id              String       @id @default(uuid())
+  title           String
+  description     String?
+  promptTemplate  String       // 各セクションのプロンプトテンプレート
+  order           Int
+  required        Boolean      @default(true)
+  jobTemplateId   String
+  jobTemplate     JobTemplate  @relation(fields: [jobTemplateId], references: [id], onDelete: Cascade)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  jobDescriptionSections JobDescriptionSection[]
+
+  @@map("job_template_sections")
+}
+
+model JobDescription {
+  id              String                  @id @default(uuid())
+  title           String
+  jobTemplateId   String
+  jobTemplate     JobTemplate            @relation(fields: [jobTemplateId], references: [id])
+  sessionId       String?
+  hearingSession  HearingSession?        @relation(fields: [sessionId], references: [id])
+  sections        JobDescriptionSection[]
+  status          String                 @default("draft") // draft, published
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@map("job_descriptions")
+}
+
+model JobDescriptionSection {
+  id                  String              @id @default(uuid())
+  content             String              // 生成されたコンテンツ
+  templateSectionId   String
+  templateSection     JobTemplateSection  @relation(fields: [templateSectionId], references: [id])
+  jobDescriptionId    String
+  jobDescription      JobDescription      @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+  order               Int
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@map("job_description_sections")
 }
