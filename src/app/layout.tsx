@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/styles/globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "採用要項ヒアリングシステム",
-  description: "企業から採用要項のヒアリングを効率よく行うためのシステム",
+  title: "募集要項自動生成システム",
+  description: "ヒアリング内容をもとに生成AIで募集要項を自動作成するシステム",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="ja" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="ja">
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
